@@ -2,6 +2,8 @@
 // See LICENSE for licensing terms.
 //
 
+#include <absl/strings/str_cat.h>
+
 #include <jsoncons/json.hpp>
 #include <jsoncons_ext/jsonpath/jsonpath.hpp>
 #include <memory_resource>
@@ -9,6 +11,7 @@
 #include "base/gtest.h"
 #include "base/logging.h"
 
+using absl::StrCat;
 namespace dfly {
 using namespace jsoncons;
 using namespace jsoncons::literals;
@@ -84,7 +87,9 @@ TEST_F(JsonTest, Errors) {
 
 TEST_F(JsonTest, Path) {
   std::error_code ec;
-  json j1 = R"({"field" : 1, "field-dash": 2})"_json;
+  json j1 = R"({"field" : 1, "field-dash": 2,
+       "objs": [{"field": 1}, {"field": 2}]
+  })"_json;
 
   auto expr = jsonpath::make_expression<json>("$.field", ec);
   EXPECT_FALSE(ec);
@@ -100,6 +105,12 @@ TEST_F(JsonTest, Path) {
   expr.evaluate(j1, [](const std::string& path, const json& val) {
     ASSERT_EQ("$['field-dash']", path);
     ASSERT_EQ(2, val.as<int>());
+  });
+  expr = jsonpath::make_expression<json>("$.objs.*", ec);
+  int index = 0;
+  expr.evaluate(j1, [&index](const std::string& path, const json& val) {
+    ASSERT_EQ(StrCat("$['objs'][", index, "]"), path);
+    ++index;
   });
 }
 

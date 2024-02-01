@@ -15,6 +15,7 @@
 %}
 
 %o bison-cc-namespace="dfly.search" bison-cc-parser="Parser"
+%o bison-locations
 %o namespace="dfly.search"
 %o class="Scanner" lex="Lex"
 %o nodefault batch

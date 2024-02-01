@@ -176,7 +176,7 @@ function(gen_flex name)
            COMMAND mkdir -p ${gen_dir}
 
            COMMAND ${REFLEX} -o ${gen_dir}/${name}.cc  --unicode --header-file=${gen_dir}/${name}.h
-                             --bison-complete  --bison-locations  ${_in}
+                             --bison-complete ${_in}
            DEPENDS ${_in} reflex_project
            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
            COMMENT "Generating lexer from ${name}.lex" VERBATIM)
