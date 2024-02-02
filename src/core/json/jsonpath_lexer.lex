@@ -1,10 +1,6 @@
 %top{
-  // TOP SECTION
-  namespace dfly::json {
-    struct Parser {
-        using symbol_type = int;
-    };
-  }
+  // generated in the header file.
+  #include "core/json/jsonpath_grammar.hh"
 }
 
 
@@ -14,13 +10,21 @@
 
 %o bison-cc-namespace="dfly.json" bison-cc-parser="Parser"
 %o namespace="dfly.json"
-%o class="Lexer" lex="Lex"
-%o nodefault batch
+%o bison-locations
 
+// Generated class and main function
+%o lexer="AbstractLexer" lex="Lex"
+
+// our derived class from AbstractLexer
+%o class="Lexer"
+%o nodefault batch
+%option unicode
 
 /* Declarations before lexer implementation.  */
 %{
-    // Declarations
+    #define DFLY_LEXER_CC 1
+    #include "src/core/json/lexer_impl.h"
+    #undef DFLY_LEXER_CC
 %}
 
 
@@ -36,8 +40,10 @@
 
 [[:space:]]+     ; // skip white space
 
-
-<<EOF>>    printf("EOF%s\n", matcher().text());
+"$"         return Parser::make_ROOT(loc());
+"."         return Parser::make_DOT(loc());
+\w[\w_\-]*  return Parser::make_UNQ_STR(str(), loc());
+<<EOF>>     printf("EOF%s\n", matcher().text());
 %%
 
 // Function definitions
