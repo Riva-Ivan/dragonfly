@@ -65,6 +65,8 @@ ABSL_FLAG(string, shard_round_robin_prefix, "",
 
 namespace dfly {
 
+thread_local BlockingCounter* current_bc = nullptr;
+
 using namespace util;
 using absl::GetFlag;
 using strings::HumanReadableNumBytes;

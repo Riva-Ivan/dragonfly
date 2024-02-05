@@ -21,6 +21,7 @@ extern "C" {
 #include "facade/dragonfly_connection.h"
 #include "io/file_util.h"
 #include "server/acl/acl_log.h"
+#include "server/container_utils.h"
 #include "util/fibers/pool.h"
 
 using namespace std;
@@ -228,7 +229,7 @@ void BaseFamilyTest::ResetService() {
   watchdog_fiber_ = pp_->GetNextProactor()->LaunchFiber([this] {
     ThisFiber::SetName("Watchdog");
 
-    if (!watchdog_done_.WaitFor(60s)) {
+    if (!watchdog_done_.WaitFor(10s)) {
       LOG(ERROR) << "Deadlock detected!!!!";
       absl::SetFlag(&FLAGS_alsologtostderr, true);
       fb2::Mutex m;
@@ -259,7 +260,11 @@ void BaseFamilyTest::ResetService() {
             LOG(ERROR) << "Key " << k_v.first << " " << k_v.second;
           }
         }
+        if (current_bc) {
+          LOG(ERROR) << "Current bc " << current_bc->DebugCount();
+        }
       });
+      LOG(FATAL) << "Failing!";
     }
   });
 }

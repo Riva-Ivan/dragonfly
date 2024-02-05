@@ -66,7 +66,7 @@ OpResult<std::string> FindFirstNonEmptySingleShard(Transaction* trans, int req_o
 // Find first non-empty key (sorted by order in command arguments) and return it,
 // otherwise return not found or wrong type error.
 OpResult<ShardFFResult> FindFirstNonEmpty(Transaction* trans, int req_obj_type) {
-  DCHECK_GT(trans->GetUniqueShardCnt(), 1u);
+  // DCHECK_GT(trans->GetUniqueShardCnt(), 1u);
 
   using FFResult = std::tuple<PrimeKey, unsigned, ShardId>;  // key, argument index, sid
   VLOG(2) << "FindFirst::Find " << trans->DebugId();

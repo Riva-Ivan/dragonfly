@@ -34,6 +34,8 @@ class TieredStorage;
 class ShardDocIndices;
 class BlockingController;
 
+extern thread_local BlockingCounter* current_bc;
+
 class EngineShard {
  public:
   struct Stats {
@@ -349,6 +351,10 @@ template <typename U, typename P>
 void EngineShardSet::RunBriefInParallel(U&& func, P&& pred) const {
   BlockingCounter bc{0};
 
+  if (current_bc == nullptr) {
+    current_bc = &bc;
+  }
+
   for (uint32_t i = 0; i < size(); ++i) {
     if (!pred(i))
       continue;
@@ -361,6 +367,9 @@ void EngineShardSet::RunBriefInParallel(U&& func, P&& pred) const {
     });
   }
   bc.Wait();
+  if (current_bc == &bc) {
+    current_bc = nullptr;
+  }
 }
 
 template <typename U, typename P> void EngineShardSet::RunBlockingInParallel(U&& func, P&& pred) {
