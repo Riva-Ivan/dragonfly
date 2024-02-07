@@ -1,5 +1,0 @@
-initContainers:
-  - name: initcontainer-string
-    image: busybox:1.28
-    command: ["/bin/sh"]
-    args: ["-c", "date; sleep 1;"]
